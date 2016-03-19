@@ -36,6 +36,16 @@ TokenParser{ parens = m_parens
            , semiSep1 = m_semiSep1
            , whiteSpace = m_whiteSpace } = makeTokenParser def
 
+term :: Parser Expr
+term = m_parens expr
+       <|> fmap Var m_identifier
+
+expr :: Parser Expr
+expr = buildExpressionParser table term
+    where table = [
+                    [Infix (m_reservedOp "." >> return Dot) AssocLeft]
+                  ]
+
 main :: IO ()
 main = do
-  print $ Fun "AAA" (Var "BBB")
+    print $ parse expr "" "v001.v002"

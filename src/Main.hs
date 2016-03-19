@@ -18,9 +18,12 @@ import Text.Parsec.Expr
 import Text.Parsec.Token
 import Text.Parsec.Language
 
-data Expr = Var String | Fun String [Expr] | Dot Expr Expr
+data Expr = Var String
+          | Assign String Expr
+          | Fun String [Expr]
+          | Dot Expr Expr
             deriving Show
-data Stmt = Bare Expr | Assign String Expr | Seq [Stmt]
+data Stmt = Seq [Expr]
             deriving Show
 
 def :: LanguageDef st
@@ -61,7 +64,7 @@ stmt :: Parser Stmt
 stmt = do
   m_whiteSpace
   e <- expr
-  return $ Seq [Bare e]
+  return $ Seq [e]
   <* eof
 
 main :: IO ()

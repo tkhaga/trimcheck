@@ -35,7 +35,8 @@ TokenParser{ parens = m_parens
            , reserved = m_reserved
            , semiSep1 = m_semiSep1
            , whiteSpace = m_whiteSpace
-           , integer = m_integer } = makeTokenParser def
+           , integer = m_integer
+           , commaSep = m_commaSep } = makeTokenParser def
 
 term :: Parser Expr
 term = m_parens expr
@@ -45,8 +46,8 @@ term = m_parens expr
 funCall :: Parser Expr
 funCall = try $ do
   name <- m_identifier
-  e <- m_parens expr
-  return $ Fun name [e]
+  e <- m_parens $ m_commaSep expr
+  return $ Fun name e
 
 expr :: Parser Expr
 expr = buildExpressionParser table term <?> "expression"

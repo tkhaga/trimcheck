@@ -20,6 +20,7 @@ import Text.Parsec.Language
 
 data Expr = Var String | Fun String [Expr] | Dot Expr Expr
             deriving Show
+data Stmt = Nop | Assign String Expr | Seq [Stmt]
 
 def :: LanguageDef st
 def = emptyDef{ identStart = letter
@@ -54,6 +55,9 @@ expr = buildExpressionParser table term <?> "expression"
   where table = [
                   [Infix (m_whiteSpace >> m_reservedOp "." >> m_whiteSpace >> return Dot) AssocLeft]
                 ]
+
+stmt :: Parser Stmt
+stmt = undefined
 
 main :: IO ()
 main = do

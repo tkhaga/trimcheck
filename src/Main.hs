@@ -11,7 +11,6 @@ stmt ::= var = expr | stmt { "\n" stmt }+
 -}
 module Main where
 
-import Control.Applicative((<*))
 import Text.Parsec
 import Text.Parsec.String
 import Text.Parsec.Expr

@@ -21,7 +21,7 @@ import Text.Parsec.Language
 data Expr = Var String | Fun String Expr | Dot Expr Expr
             deriving Show
 
-def :: LanguageDef ()
+def :: LanguageDef st
 def = emptyDef{ identStart = letter
               , identLetter = alphaNum
               , opStart = oneOf "=."
@@ -34,18 +34,27 @@ TokenParser{ parens = m_parens
            , reservedOp = m_reservedOp
            , reserved = m_reserved
            , semiSep1 = m_semiSep1
-           , whiteSpace = m_whiteSpace } = makeTokenParser def
+           , whiteSpace = m_whiteSpace
+           , integer = m_integer } = makeTokenParser def
 
 term :: Parser Expr
 term = m_parens expr
+       <|> try funCall
        <|> fmap Var m_identifier
 
+funCall :: Parser Expr
+funCall = do
+  name <- m_identifier
+  e <- m_parens expr
+  return $ Fun name e
+
 expr :: Parser Expr
-expr = buildExpressionParser table term
-    where table = [
-                    [Infix (m_reservedOp "." >> return Dot) AssocLeft]
-                  ]
+expr = buildExpressionParser table term <?> "expression"
+  where table = [
+                  [Infix (m_whiteSpace >> m_reservedOp "." >> m_whiteSpace >> return Dot) AssocLeft]
+                ]
 
 main :: IO ()
 main = do
-    print $ parse expr "" "v001.v002"
+  inp <- getLine
+  print $ parse expr "" inp

@@ -20,7 +20,8 @@ import Text.Parsec.Language
 
 data Expr = Var String | Fun String [Expr] | Dot Expr Expr
             deriving Show
-data Stmt = Nop | Assign String Expr | Seq [Stmt]
+data Stmt = Assign String Expr | Seq [Stmt]
+            deriving Show
 
 def :: LanguageDef st
 def = emptyDef{ identStart = letter

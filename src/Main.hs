@@ -18,7 +18,7 @@ import Text.Parsec.Expr
 import Text.Parsec.Token
 import Text.Parsec.Language
 
-data Expr = Var String | Fun String Expr | Dot Expr Expr
+data Expr = Var String | Fun String [Expr] | Dot Expr Expr
             deriving Show
 
 def :: LanguageDef st
@@ -46,7 +46,7 @@ funCall :: Parser Expr
 funCall = try $ do
   name <- m_identifier
   e <- m_parens expr
-  return $ Fun name e
+  return $ Fun name [e]
 
 expr :: Parser Expr
 expr = buildExpressionParser table term <?> "expression"

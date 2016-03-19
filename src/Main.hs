@@ -20,7 +20,7 @@ import Text.Parsec.Language
 
 data Expr = Var String | Fun String [Expr] | Dot Expr Expr
             deriving Show
-data Stmt = Assign String Expr | Seq [Stmt]
+data Stmt = Bare Expr | Assign String Expr | Seq [Stmt]
             deriving Show
 
 def :: LanguageDef st
@@ -58,9 +58,13 @@ expr = buildExpressionParser table term <?> "expression"
                 ]
 
 stmt :: Parser Stmt
-stmt = undefined
+stmt = do
+  m_whiteSpace
+  e <- expr
+  return $ Seq [Bare e]
+  <* eof
 
 main :: IO ()
 main = do
   inp <- getLine
-  print $ parse expr "" inp
+  print $ parse stmt "" inp

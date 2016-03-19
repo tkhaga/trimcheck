@@ -4,9 +4,9 @@
  timecode="timecode.txt"
 -}
 {-
-expr ::= var | funcall | ( expr ) | expr . expr
-var  ::= letter {  letter | digit }*
-funcall ::= var ( { expr { , expr }* }? )
+expr ::= var | funcall | '(' expr ') | expr '.' expr
+var  ::= letter { letter | digit }*
+funcall ::= var ( { expr { ',' expr }* }? )
 stmt ::= var = expr | stmt { "\n" stmt }+
 -}
 module Main where
@@ -39,11 +39,11 @@ TokenParser{ parens = m_parens
 
 term :: Parser Expr
 term = m_parens expr
-       <|> try funCall
+       <|> funCall
        <|> fmap Var m_identifier
 
 funCall :: Parser Expr
-funCall = do
+funCall = try $ do
   name <- m_identifier
   e <- m_parens expr
   return $ Fun name e
